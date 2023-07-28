@@ -8,22 +8,22 @@ import net.minecraft.world.EnumDifficulty;
  * 
  * So I made my own enum, with blackjack, and hookers!
  */
-public enum Difficulty
-{
-    PEACEFUL, EASY, NORMAL, HARD;
+public enum Difficulty {
 
-    public String getUnlocName()
-    {
+    PEACEFUL,
+    EASY,
+    NORMAL,
+    HARD;
+
+    public String getUnlocName() {
         return EnumDifficulty.values()[ordinal()].getDifficultyResourceKey();
     }
 
-    public String getLocName()
-    {
+    public String getLocName() {
         return StatCollector.translateToLocal(getUnlocName());
     }
 
-    public static Difficulty get(EnumDifficulty diff)
-    {
+    public static Difficulty get(EnumDifficulty diff) {
         return values()[diff.ordinal()];
     }
 }

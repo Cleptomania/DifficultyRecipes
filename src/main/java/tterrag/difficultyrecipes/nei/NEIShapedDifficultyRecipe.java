@@ -8,20 +8,20 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.oredict.ShapedOreRecipe;
-import tterrag.difficultyrecipes.DifficultyRecipes;
-import tterrag.difficultyrecipes.recipes.DifficultyRecipe;
-import tterrag.difficultyrecipes.util.Difficulty;
-import codechicken.lib.gui.GuiDraw;
-import codechicken.nei.NEIServerUtils;
-import codechicken.nei.recipe.ShapedRecipeHandler;
 
 import com.google.common.collect.Lists;
 
-public class NEIShapedDifficultyRecipe extends ShapedRecipeHandler
-{
+import codechicken.lib.gui.GuiDraw;
+import codechicken.nei.NEIServerUtils;
+import codechicken.nei.recipe.ShapedRecipeHandler;
+import tterrag.difficultyrecipes.DifficultyRecipes;
+import tterrag.difficultyrecipes.recipes.DifficultyRecipe;
+import tterrag.difficultyrecipes.util.Difficulty;
+
+public class NEIShapedDifficultyRecipe extends ShapedRecipeHandler {
+
     @Override
-    public String getRecipeName()
-    {
+    public String getRecipeName() {
         return StatCollector.translateToLocal("difficultyrecipes.shaped.name");
     }
 
@@ -29,52 +29,41 @@ public class NEIShapedDifficultyRecipe extends ShapedRecipeHandler
 
     @SuppressWarnings("unchecked")
     @Override
-    public void loadCraftingRecipes(String outputId, Object... results)
-    {
-        if (outputId.equals("crafting"))
-        {
-            for (DifficultyRecipe<?> rec : DifficultyRecipe.allRecipes)
-            {
+    public void loadCraftingRecipes(String outputId, Object... results) {
+        if (outputId.equals("crafting")) {
+            for (DifficultyRecipe<?> rec : DifficultyRecipe.allRecipes) {
                 CachedShapedRecipe cached = null;
-                if (rec.getType() == ShapedOreRecipe.class)
-                {
+                if (rec.getType() == ShapedOreRecipe.class) {
                     DifficultyRecipe<ShapedOreRecipe> recipe = (DifficultyRecipe<ShapedOreRecipe>) rec;
 
-                    cached = forgeShapedRecipe(((DifficultyRecipe<ShapedOreRecipe>) rec)
+                    cached = forgeShapedRecipe(
+                        ((DifficultyRecipe<ShapedOreRecipe>) rec)
                             .getRecipe(rec.getDifficulty(Minecraft.getMinecraft().theWorld)));
 
-                    if (cached == null)
-                        continue;
+                    if (cached == null) continue;
 
                     cached.computeVisuals();
                     arecipes.add(cached);
                     this.cached.add(recipe);
                 }
             }
-        }
-        else
-        {
+        } else {
             super.loadCraftingRecipes(outputId, results);
         }
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void loadCraftingRecipes(ItemStack result)
-    {
-        for (DifficultyRecipe<?> rec : DifficultyRecipe.allRecipes)
-        {
-            if (rec.getType() == ShapedOreRecipe.class)
-            {
+    public void loadCraftingRecipes(ItemStack result) {
+        for (DifficultyRecipe<?> rec : DifficultyRecipe.allRecipes) {
+            if (rec.getType() == ShapedOreRecipe.class) {
                 DifficultyRecipe<ShapedOreRecipe> recipe = (DifficultyRecipe<ShapedOreRecipe>) rec;
                 Difficulty diff = recipe.getDifficulty(Minecraft.getMinecraft().theWorld);
                 ShapedOreRecipe irecipe = recipe.getRecipe(diff);
-                if (irecipe != null && NEIServerUtils.areStacksSameTypeCrafting(irecipe.getRecipeOutput(), result))
-                {
+                if (irecipe != null && NEIServerUtils.areStacksSameTypeCrafting(irecipe.getRecipeOutput(), result)) {
                     CachedShapedRecipe cached = null;
                     cached = forgeShapedRecipe(recipe.getRecipe(diff));
-                    if (cached == null)
-                        continue;
+                    if (cached == null) continue;
                     cached.computeVisuals();
                     arecipes.add(cached);
                     this.cached.add(recipe);
@@ -85,22 +74,17 @@ public class NEIShapedDifficultyRecipe extends ShapedRecipeHandler
 
     @SuppressWarnings("unchecked")
     @Override
-    public void loadUsageRecipes(ItemStack ingredient)
-    {
-        for (DifficultyRecipe<?> rec : DifficultyRecipe.allRecipes)
-        {
-            if (rec.getType() == ShapedOreRecipe.class)
-            {
+    public void loadUsageRecipes(ItemStack ingredient) {
+        for (DifficultyRecipe<?> rec : DifficultyRecipe.allRecipes) {
+            if (rec.getType() == ShapedOreRecipe.class) {
                 DifficultyRecipe<ShapedOreRecipe> recipe = (DifficultyRecipe<ShapedOreRecipe>) rec;
                 CachedShapedRecipe cached = null;
                 cached = forgeShapedRecipe(recipe.getRecipe(recipe.getDifficulty(Minecraft.getMinecraft().theWorld)));
 
-                if (cached == null || !cached.contains(cached.ingredients, ingredient.getItem()))
-                    continue;
+                if (cached == null || !cached.contains(cached.ingredients, ingredient.getItem())) continue;
 
                 cached.computeVisuals();
-                if (cached.contains(cached.ingredients, ingredient))
-                {
+                if (cached.contains(cached.ingredients, ingredient)) {
                     cached.setIngredientPermutation(cached.ingredients, ingredient);
                     arecipes.add(cached);
                     this.cached.add(recipe);
@@ -110,24 +94,20 @@ public class NEIShapedDifficultyRecipe extends ShapedRecipeHandler
     }
 
     @Override
-    public CachedShapedRecipe forgeShapedRecipe(ShapedOreRecipe recipe)
-    {
+    public CachedShapedRecipe forgeShapedRecipe(ShapedOreRecipe recipe) {
         return recipe == null ? null : super.forgeShapedRecipe(recipe);
     }
 
     @Override
-    public void drawExtras(int recipeIndex)
-    {
+    public void drawExtras(int recipeIndex) {
         super.drawExtras(recipeIndex);
         DifficultyRecipe<?> recipe = cached.get(recipeIndex);
         Difficulty diff = recipe.getDifficulty(Minecraft.getMinecraft().theWorld);
         String s = diff.getLocName();
         StringBuilder sb = new StringBuilder();
         Collection<Difficulty> dupes = DifficultyRecipe.getDuplicatedRecipes(recipe, diff);
-        if (!dupes.isEmpty())
-        {
-            for (Difficulty e : dupes)
-            {
+        if (!dupes.isEmpty()) {
+            for (Difficulty e : dupes) {
                 sb.append(e.getLocName());
                 sb.append(", ");
             }
