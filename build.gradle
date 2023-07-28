@@ -510,15 +510,6 @@ repositories.configureEach { repo ->
     }
 }
 
-if (file('repositories.gradle.kts').exists()) {
-    apply from: 'repositories.gradle.kts'
-} else if (file('repositories.gradle').exists()) {
-    apply from: 'repositories.gradle'
-} else {
-    logger.error("Neither repositories.gradle.kts nor repositories.gradle was found, make sure you extracted the full ExampleMod template.")
-    throw new RuntimeException("Missing repositories.gradle[.kts]")
-}
-
 configurations {
     runtimeClasspath.extendsFrom(runtimeOnlyNonPublishable)
     testRuntimeClasspath.extendsFrom(runtimeOnlyNonPublishable)
@@ -618,6 +609,15 @@ repositories {
             url "https://maven.mcmoddev.com/"
         }
     }
+}
+
+if (file('repositories.gradle.kts').exists()) {
+    apply from: 'repositories.gradle.kts'
+} else if (file('repositories.gradle').exists()) {
+    apply from: 'repositories.gradle'
+} else {
+    logger.error("Neither repositories.gradle.kts nor repositories.gradle was found, make sure you extracted the full ExampleMod template.")
+    throw new RuntimeException("Missing repositories.gradle[.kts]")
 }
 
 def mixinProviderGroup = "io.github.legacymoddingmc"
